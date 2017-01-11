@@ -1,5 +1,7 @@
 
-
+// foursquare data
+var foursquareID = "KQZCWKWZJ04GEK2BNVMOFLOY24JVA3IJDBHJIWKWNGYSQADB";
+var foursquareSecr = "KQZCWKWZJ04GEK2BNVMOFLOY24JVA3IJDBHJIWKWNGYSQADB";
 var locations = [
   {
   "name" : "Boba Guys",
@@ -118,6 +120,15 @@ function initializeMap() {
     });
     // search functionality
 }
+function locationFinder(loationArr){
+  var locations = [];
+  for (var i = 0; i <locationArr.length; i++ ) {
+    locations.push(locationArr[i].location);
+  }
+  return locations;
+}
+locations = locationFinder(locations);
+
 // end of initializeMap
 // search functionality
 function populateInfoWindow(marker,infoWindow){
