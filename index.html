@@ -1,17 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Find Best Boba Tea in San Franscisco</title>
+  <title>Nearby Boba Tea Finder in San Francisco </title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link href="libs/css/bootstrap.min.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
-  <div id="map">
+  <div class="container-fluid">
+    <div class="row header">
+      <div class="col-md-12">
+        <h1 class="text-center">Boba Tea Finder in San Francisco</h1>
+        <input type="text" class="form-control" placeholder="Find a Boba Tea Shop: ">
+      </div>
+    </div>
+    <div class="main row mapSection">
+      <div class="col-md-6">
+        <h3>List of nearby Boba Teas</h3>
+        Lists...
+      </div>
+      <div class="col-md-6 mapSection">
+        <div id="map"></div>
+      </div>
   </div>
-  <script src="js/main.js"></script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2m1yNrQwNuFETXmpmoAmpPi98rLpN0Ko&libraries=places&callback=initializeMap">
   </script>
+  <script src="libs/js/jquery-3.1.1.min.js"></script>
+  <script src="libs/js/bootstrap.min.js"></script>
+  <script src="js/main.js"></script>
+
 
 </body>
 </html>

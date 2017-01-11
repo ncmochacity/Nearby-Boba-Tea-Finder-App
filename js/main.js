@@ -1,21 +1,5 @@
-// declare global map variable without storing anything
-var map;
-function initializeMap() {
-  var mapOptions = {
-    zoom : 13,
-    center : new google.maps.LatLng(37.790003,-122.407301),
-    mapTypeId : google.maps.MapTypeId.ROADMAP,
-    disableDefaultUI : true,
-    zoomControl : false,
-    scrollwheel : false,
-    navigationControl : false,
-    scaleControl : false,
-    styles:[
 
-    ]
-  };
-  map = new google.maps.Map(document.querySelector("#map"),mapOptions);
-}
+
 var locations = [
   {
   "name" : "Boba Guys",
@@ -64,38 +48,85 @@ var locations = [
 }
 
 ];
-// add a marker
-/*
-createMapMarker(placeData) reads Google Places search results to create map pins.
-placeData is the object returned from search results containing information
-about a single location.
-*/
-function createMapsMarker(placeData) {
-  // name of the place from the place service
-  var placeName = placeData.formatted_address;
-  // current boundaries of the map window
-  var bounds = window.mapBounds;
-  // marker is an object with additional data about the pin for a single location
-  var marker = new google.maps.Marker({
-    map : map,
-    position:placeData.geometry.location,
-    title : name
-  });
 
+var map;
+var markers = [];
 
-  // infoWindows are the little helper windows that open when you click
-  var infoWindow = new google.maps.infoWindow();
-  //  To make the info window visible, you need to call the open() method on the InfoWindow
-  marker.addListener('click',function(){
-    infoWindow.open(map,marker);
-  });
+function initializeMap() {
+  var mapOptions = {
+    zoom : 13,
+    center : new google.maps.LatLng(37.790003,-122.407301),
+    mapTypeId : google.maps.MapTypeId.ROADMAP,
+    disableDefaultUI : true,
+    zoomControl : false,
+    scrollwheel : false,
+    navigationControl : false,
+    scaleControl : false,
+    styles:[
+      {
+        "stylers":[
+          { "saturation":-41 },
+          { "hue": "#00ffb3" },
+          { "lightness":1 }
+        ]
+      },{
+        "featureType": "road.highway",
+        "stylers": [
+          { "saturation": -41 },
+          { "lightness": 1 }
+        ]
+      },{
+        "featureType":"poi",
+        "stylers": [
+          { "visibility": "simplified" }
+        ]
+      },{
+        "featureType": "water",
+        "stylers":  [
+          { "visibility": "on"},
+          { "saturation": -51 },
+          { "lightness": 1 }
+        ]
+      }
+    ]
+  };
+  map = new google.maps.Map(document.querySelector("#map"),mapOptions);
+
+  var place;
+  var infoWindow = new google.maps.InfoWindow();
+  var bounds = new google.maps.LatLngBounds();
+      for (var i=0; i < locations.length; i++) {
+        place = locations[i].location;
+        title = locations[i].name;
+        var marker = new google.maps.Marker({
+          position : place,
+          map:map,
+          title:title,
+          animation:google.maps.Animation.DROP,
+          id:i
+        });
+        markers.push(marker);
+        marker.addListener('click', function() {
+          populateInfoWindow(this, infoWindow);
+        });
+        bounds.extend(markers[i].position);
+      }
+      map.fitBounds(bounds);
+      map.setCenter(bounds.getCenter());
+    window.addEventListener('resize', function(e) {
+      map.fitBounds(bounds);
+    });
+    // search functionality
 }
-/*
-callback(results, status) makes sure the search returned results for a location.
-If so, it creates a new map marker for that location.
-*/
-function callBack(rqResult,status ) {
-  if(status == google.maps.places.PlacesServiceStatus.OK) {
-    createMapsMarker(rqResult[0]);
+// end of initializeMap
+// search functionality
+function populateInfoWindow(marker,infoWindow){
+  if(infoWindow.marker != marker) {
+    infoWindow.marker = marker;
+    infoWindow.setContent('<div>' + marker.title + '</div>');
+    infoWindow.open(map,marker);
+    infoWindow.addListener('closeclick',function(){
+      infoWindow.setMarker(null);
+    });
   }
 }
