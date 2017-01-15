@@ -1,12 +1,13 @@
 
 // foursquare data
 var foursquareID = "KQZCWKWZJ04GEK2BNVMOFLOY24JVA3IJDBHJIWKWNGYSQADB";
-var foursquareSecr = "KQZCWKWZJ04GEK2BNVMOFLOY24JVA3IJDBHJIWKWNGYSQADB";
+var foursquareSecr = "FSJK4HAKCYIHM2DIC4NGDL33N44SBSGNGE25DCLOT01WK1UF";
 var locations = [
   {
   "name" : "Boba Guys",
   "location" : {lat: 37.790003,lng: -122.407301},
-  "address" : "429 Stockton St"
+  "address" : "429 Stockton St",
+  "venue_ID" : "54024696498e2fef352d2586"
 },{
   "name" : "Plentea",
   "location" : {lat:37.791375,lng:-122.404389},
@@ -48,12 +49,47 @@ var locations = [
   "location" :{lat:37.794298,lng:-122.406983},
   "address" : "103 Waverly Pl"
 }
-
 ];
+var model = {
+  init:function(){
+
+  },
+  load:function(){
+
+  }
+};
+function viewModel () {
+  var foursquareURL = "https://api.foursquare.com/v2/venues/";
+  $.ajax({
+    url:foursquareURL,
+    type: "GET",
+    dataType : "json",
+    success:function(data){
+      var rating = data.response.venue.rating;
+
+    }
+  });
+}
+var mapListView = {
+  init : function(){
+    //show list of bubble teas
+    this.bubbleTeaList = $("#bubbleTeaList");
+
+  }
+
+
+};
+var markersView = {
+
+};
 
 var map;
 var markers = [];
-
+var place;
+var infoWindow = new google.maps.InfoWindow({
+  content:""
+});
+var bounds = new google.maps.LatLngBounds();
 function initializeMap() {
   var mapOptions = {
     zoom : 13,
@@ -94,9 +130,7 @@ function initializeMap() {
   };
   map = new google.maps.Map(document.querySelector("#map"),mapOptions);
 
-  var place;
-  var infoWindow = new google.maps.InfoWindow();
-  var bounds = new google.maps.LatLngBounds();
+
       for (var i=0; i < locations.length; i++) {
         place = locations[i].location;
         title = locations[i].name;
@@ -118,20 +152,11 @@ function initializeMap() {
     window.addEventListener('resize', function(e) {
       map.fitBounds(bounds);
     });
-    // search functionality
 }
-function locationFinder(loationArr){
-  var locations = [];
-  for (var i = 0; i <locationArr.length; i++ ) {
-    locations.push(locationArr[i].location);
-  }
-  return locations;
-}
-locations = locationFinder(locations);
-
 // end of initializeMap
 // search functionality
-function populateInfoWindow(marker,infoWindow){
+
+function populateInfoWindow(marker, infoWindow){
   if(infoWindow.marker != marker) {
     infoWindow.marker = marker;
     infoWindow.setContent('<div>' + marker.title + '</div>');

@@ -12,13 +12,22 @@
     <div class="row header">
       <div class="col-md-12">
         <h1 class="text-center">Boba Tea Finder in San Francisco</h1>
-        <input type="text" class="form-control" placeholder="Find a Boba Tea Shop: ">
       </div>
+      <div class="col-lg-6">
+        <div class="input-group">
+          <input type="text" class="form-control" id="searchBox" placeholder="Find a Boba Tea Shop: ">
+          <span class="input-group-btn">
+            <button type="button" class="btn btn-secondary">GO!</button>
+          </span>
+        </div>
+      </div>
+      <!--end of input column  -->
     </div>
     <div class="main row mapSection">
       <div class="col-md-6">
         <h3>List of nearby Boba Teas</h3>
         Lists...
+        <div id="bubbleTeaList"></div>
       </div>
       <div class="col-md-6 mapSection">
         <div id="map"></div>
@@ -27,6 +36,7 @@
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2m1yNrQwNuFETXmpmoAmpPi98rLpN0Ko&libraries=places&callback=initializeMap">
   </script>
   <script src="libs/js/jquery-3.1.1.min.js"></script>
+  <script src="libs/js/knockout-3.4.1.js"></script>
   <script src="libs/js/bootstrap.min.js"></script>
   <script src="js/main.js"></script>
 
