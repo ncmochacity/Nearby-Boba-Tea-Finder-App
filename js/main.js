@@ -50,6 +50,7 @@ var locations = [
   "address" : "103 Waverly Pl"
 }
 ];
+console.log("I'm showing you locations of bubble tea");
 var model = {
   init:function(){
 
@@ -86,10 +87,7 @@ var markersView = {
 var map;
 var markers = [];
 var place;
-var infoWindow = new google.maps.InfoWindow({
-  content:""
-});
-var bounds = new google.maps.LatLngBounds();
+
 function initializeMap() {
   var mapOptions = {
     zoom : 13,
@@ -129,7 +127,10 @@ function initializeMap() {
     ]
   };
   map = new google.maps.Map(document.querySelector("#map"),mapOptions);
-
+  var infoWindow = new google.maps.InfoWindow({
+    content:""
+  });
+  var bounds = new google.maps.LatLngBounds();
 
       for (var i=0; i < locations.length; i++) {
         place = locations[i].location;
