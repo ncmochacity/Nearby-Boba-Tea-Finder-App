@@ -4,6 +4,86 @@ foursquare data
 
 */
 
+// creating bubble tea object
+var TeaShops = function(item){
+  this.name = ko.observable(item.name);
+  this.address = ko.observable(item.address);
+  this.location = item.location;
+  this.venue_ID = item.venue_ID;
+  this.info = '<h5>' + this.name() + '</h5>' + '<p>Address:' + this.address() + '<br>' + ", San Francisco, CA" + '</p>';
+};
+/*viewModel that stores the whole list of Bubble Tea listings in a Knockout observable Array
+Creating Google Maps marker for each location
+and perform search filters when user starts typing
+*/
+function viewModel () {
+  var self = this;
+  // storing a list of locations array inside variable bubbleLocations
+  // initialize empty knockout observableArray
+  this.bubbleTeaList = ko.observableArray([]);
+  locations.map(function(location){
+    self.bubbleTeaList.push(new TeaShops(location));
+  });
+
+  // bubbleTeaList array will store Teashops objects and storing the Google maps marker object as a property of the Teashop object
+  this.bubbleTeaList().forEach(function(store,index,array){
+    var marker = new google.maps.Marker({
+      position : store.location,
+      map:map,
+      info:store.info,
+      id:index,
+      animation:google.maps.Animation.DROP
+    });
+    store.marker = marker;
+    store.id = marker.id;
+    
+    bounds.extend(marker.position);
+    // listens to marker's click event, and when clicked, open up infoWindow with corresponding information
+    marker.addListener("click",function(){
+      infoWindow.setContent('<div>' + marker.info + '</div>');
+      infoWindow.open(map,marker);
+    });
+  });
+  console.log(this.bubbleTeaList());
+  map.fitBounds(bounds);
+  map.setCenter(bounds.getCenter());
+  // when the browser resize event is activated, recenter google maps boundaries
+  window.addEventListener('resize', function(e) {
+    map.fitBounds(bounds);
+  });
+  // begin filtering text input
+  self.searchText= ko.observable("");
+  this.filterBubbleList = ko.computed(function(){
+    var filtering = this.searchText().toLowerCase();
+    // close infowindow as user keeps typing
+    infoWindow.close();
+      return self.bubbleTeaList().filter(function getMatch(item){
+        var showItem = !filtering || item.name().toLowerCase().indexOf(filtering) >= 0;
+          item.marker.setVisible(showItem);
+          return showItem;
+      });
+
+  },this);
+
+
+      this.bubbleDOM = document.getElementById("bubbleTeaList");
+      var bubbleArr = this.bubbleTeaList().map(function(item){
+        return item.name();
+      });
+      for (var i = 0; i < bubbleArr.length; i++){
+        var title = bubbleArr[i];
+        var listElem = document.createElement("li");
+        listElem.classList.add("teaElem");
+        listElem.setAttribute("id",i);
+        listElem.innerHTML = "<a>" + title + "</a>";
+        this.bubbleDOM.appendChild(listElem);
+      }
+
+
+}
+
+// global variables for the app
+var map;
 var foursquareID = "KQZCWKWZJ04GEK2BNVMOFLOY24JVA3IJDBHJIWKWNGYSQADB";
 var foursquareSecr = "FSJK4HAKCYIHM2DIC4NGDL33N44SBSGNGE25DCLOT01WK1UF";
 var locations = [
@@ -65,51 +145,6 @@ var locations = [
   "venue_ID" : "5616e060498ecfea6b3c29ad"
 }
 ];
-
-// showList displays the Bubble Teas links for users to click on
-function showList(){
-// get the input: get locations
-/*var getLoc= locations;
-var titles =;
-kiss : keep it simple stupid
-*/
-// transform it : create links from locations
-
-// <li><a>Boba Guys</a></li>
-
-// each location requires a title from locations
-// display output: show locations in the left area of the page
-
-
-  var bubbleElem = document.getElementById("bubbleTeaList");
-  var locationNames = locations.map(function(item){
-    return item.name;
-  });
-  // return location names wrapped inside an array, now needs to convert to strings
-  var locationNamesStr = locationNames.join("");
-  for (var i = 0; i<locationNames.length;i++){
-    var title=locationNames[i];
-    var listElem = document.createElement("li");
-    bubbleElem.appendChild(listElem);
-    listElem.innerHTML = "<a>" + title + "</a>";
-  }
-}
-showList();
-
-/* beginning of Knockout's viewModel */
-function viewModel () {
-  var self = this;
-  // storing a list of locations array inside variable bubbleLocations
-  var bubbleLocations = locations;
-  // initialize empty knockout observableArray
-  self.listLocationsArr = ko.observableArray([]);
-
-
-}
-
-var map;
-var markers = [];
-var place;
 function initializeMap() {
   var mapOptions = {
     zoom : 13,
@@ -149,45 +184,13 @@ function initializeMap() {
     ]
   };
   map = new google.maps.Map(document.querySelector("#map"),mapOptions);
-  var infoWindow = new google.maps.InfoWindow({
-    content:"",
+  infoWindow = new google.maps.InfoWindow({
+    content:""
   });
-  var bounds = new google.maps.LatLngBounds();
+  bounds = new google.maps.LatLngBounds();
+  // calling Ko.applyBindings with viewModel passed in will activate to the UI
+  var Vm = new viewModel();
+  ko.applyBindings(Vm);
 
-      for (var i=0; i < locations.length; i++) {
-        place = locations[i].location;
-        title = locations[i].name;
-        var marker = new google.maps.Marker({
-          position : place,
-          map:map,
-          title:title,
-          animation:google.maps.Animation.DROP,
-          id:i
-        });
-        markers.push(marker);
-        marker.addListener('click', function() {
-          populateInfoWindow(this, infoWindow);
-        });
-        bounds.extend(markers[i].position);
-      }
-      map.fitBounds(bounds);
-      map.setCenter(bounds.getCenter());
-    window.addEventListener('resize', function(e) {
-      map.fitBounds(bounds);
-    });
 }
 // end of initializeMap
-// search functionality
-
-function populateInfoWindow(marker, infoWindow){
-  if(infoWindow.marker != marker) {
-  infoWindow.marker = marker;
-  infoWindow.setContent('<div>' + marker.title + '</div>');
-  infoWindow.open(map,marker);
-  infoWindow.addListener('closeclick',function(){
-    infoWindow.setMarker(null);
-  });
-  }
-}
-var vm = new viewModel();
-ko.applyBindings(vm);

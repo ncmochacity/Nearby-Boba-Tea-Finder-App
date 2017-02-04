@@ -6,28 +6,45 @@
 
 
 function filterList(searchBox,bubbleTeas){
- if  (searchBox === ""){
+ if  (!searchBox){
    return bubbleTeas;
  }
 
- function getMatchTerms(value,index,array){
-   if(value.toLowerCase().indexOf(searchBox) >= 0){
-     return true;
-  }
-  else{
-    return false;
-  }
- }
- var result = bubbleTeas.filter(getMatchTerms);
- // end of getResult function
-  return result;
-
+ return bubbleTeas.filter(function getMatchTerms(value){
+   return value.toLowerCase().indexOf(searchBox) >= 0;
+ });
 }
 // end of filterList
 
 function sayHello(){
   return "hello";
 }
+function checkIf(age) {
+  var ages = age;
+  if (ages >= 21 ) {
+    return "you passed the legal drinking age";
+  }
+  else {
+    return "you're underaged";
+  }
+}
+
+function getMatch(str) {
+  var terms = str;
+  var sentenceArr = ["sophisticated","coffee","cunt" ];
+}
+QUnit.test("test if-else",function(assert) {
+  var legalAge = checkIf(20);
+  assert.equal(legalAge,"you're underaged","checking for underaged...");
+  legalAge = checkIf(30);
+  assert.equal(legalAge,"you passed the legal drinking age","cheking for overaged...");
+});
+QUnit.test("test toLowerCase",function(assert) {
+  var str ="HELLO WORLD".toLowerCase();
+  assert.equal(str,"hello world","converting strings to lowercased letters");
+  str = "hello world";
+  assert.equal(str,"hello world","strings are already lowercased");
+});
 
 QUnit.test( "hello test", function(assert) {
   var hello = sayHello();
