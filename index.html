@@ -5,33 +5,39 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link href="libs/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,700,900" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
   <div class="container-fluid">
     <div class="row header">
       <div class="col-md-12">
-        <h1 class="text-center text-uppercase heading">San Francisco's best Bubble Teas !</h1>
-      </div>
-      <div class="col-lg-6">
-        <div class="input-group">
-          <input type="text" class="form-control" data-bind="textInput: searchText,valueUpdate: 'keyup'" id="searchBox" placeholder="Find a Boba Tea Shop: ">
-        </div>
+        <h1 class="text-center text-uppercase heading">Boba Tea Finder App</h1>
       </div>
       <!--end of input column  -->
     </div>
     <div class="main row mapSection">
-      <div class="col-md-6">
-        <h3 class="text-center">List of nearby Boba Teas</h3>
-        Lists...
-        <ul id="bubbleTeaList" class="text-center" >
-          <!-- need to insert rows  -->
+      <div class="col-md-6 ">
+        <div class="input-group col-xs-12">
+          <input type="text" class="form-control" data-bind="textInput: searchText,valueUpdate: 'afterkeydown'" id="searchBox" placeholder="Search for a nearby Boba Tea: ">
+        </div>
+        <a href="#" class="nav-toggle-btn close">
+          <span></span>
+          <span></span>
+          <span></span>
+        </a>
+        <nav class="nav-container" role="navigation">
+          <ul id="bubbleTeaList" data-bind="foreach: filterBubbleList" class="text-center" >
+            <!-- need to insert rows  -->
+            <li id="textElem"><a href="#" data-bind="text:name,click:$parent.clickableMarker"></a></li>
+          </ul>
+        </nav>
 
-        </ul>
       </div>
       <div class="col-md-6 mapSection">
         <div id="map"></div>
       </div>
+    </div>
   </div>
 
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2m1yNrQwNuFETXmpmoAmpPi98rLpN0Ko&libraries=places&callback=initializeMap">

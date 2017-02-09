@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css?family=Erica+One|Fascinate|Open+Sans+Condensed:300,700|Roboto:400,700|Source+Sans+Pro:700,900');
 html,
 body {
   height:100%;
@@ -7,7 +6,8 @@ body {
 }
 body {
   letter-spacing: 2px;
-  line-height: 1.5em;
+  line-height: 1.7em;
+  background-color: #f0eceb;
   font:14px "Roboto",sans-serif;
 }
 h1,
@@ -20,6 +20,7 @@ h5{
 }
 .heading{
   font-size: 4em;
+  color:#6a5750;
 }
 .container-fluid,
 .mapSection {
@@ -29,11 +30,129 @@ h5{
   height:100%;
   overflow:auto;
 }
+.listHeader{
+  color:#6a5750;
+}
+.img-wrapper{
+  margin: 0 auto;
+}
+img{
+  margin-top:20px;
+}
+.ratingScore{
+  width:50px;
+  font-size:1.3em;
+  padding:7px 10px 5px 9px;
+  font-weight:bold;
+  color:white;
+  background-color: rgba(53, 222, 149, 0.94);
+  line-height: 35px;
+  margin-bottom:20px;
+}
+.ten{
+  font-size:0.7em;
+}
+.location{
+  line-height:35px;
+}
+#searchBox{
+  border-radius:4px;
+  border:none;
+  height:50px;
+  font-size:1.2em;
+  font-family:"Source Sans Pro",sans-serif;
+  font-weight:500;
+}
+
 #bubbleTeaList li {
   list-style: none;
   margin:20px 10px;
+  font-family: "Source Sans Pro",sans-serif;
+  text-transform: uppercase;
+  font-weight:700;
+}
+#bubbleTeaList a{
+  color:#d2aa60;
+  -webkit-transition:all 0.5s ease-in-out;
+  transition:all 0.5s ease-in-out;
+}
+/*menu toggle styling
+*/
+
+/* responsive styling */
+
+.nav-container{
+  display: none;
+}
+.nav-container.open{
+  display:block;
+}
+.nav-toggle-btn{
+  width:36px;
+  height:36px;
+  right:20px;
+  top:15px;
+  cursor:pointer;
+  z-index: 16;
+  position:absolute;
+  transform: rotate(0deg);
+  transition: 0.5s ease-in;
+  overflow: hidden;
+}
+.nav-toggle-btn span{
+  width:20px;
+  height:2px;
+  display:block;
+  opacity: 1;
+  position:absolute;
+  background-color: #24252f;
+  transform: rotate(0deg);
+}
+.nav-toggle-btn span:nth-child(1){
+  top:6px;
+}
+.nav-toggle-btn span:nth-child(2){
+  top:12px;
+}
+.nav-toggle-btn span:nth-child(3){
+  top:18px;
+}
+.nav-toggle-btn.close span:nth-child(1){
+  top:18px;
+  transform: rotate(135deg);
+}
+.nav-toggle-btn.close span:nth-child(2){
+  opacity:0;
+}
+.nav-toggle-btn.close span:nth-child(3){
+  top:18px;
+  transform: rotate(-135deg);
+}
+.glyphicon{
+  margin-right:10px;
+}
+#bubbleTeaList a:hover{
+  text-decoration: none;
+  cursor: pointer;
+  color:white;
+  padding:10px;
+  background-color: #d2aa60;
 }
 #map {
   width:100%;
   height:100%;
+}
+@media only screen and (min-width:550px){
+  .nav-toggle-btn{
+    display:none;
+  }
+  .nav-container{
+    display:block;
+  }
+}
+@media only screen and (max-width:720px){
+  #searchBox{
+    width:70%;
+    margin-bottom:40px;
+  }
 }

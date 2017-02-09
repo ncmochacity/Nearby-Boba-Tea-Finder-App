@@ -6,12 +6,22 @@ foursquare data
 
 // creating bubble tea object
 var TeaShops = function(item){
-  this.name = ko.observable(item.name);
-  this.address = ko.observable(item.address);
+  this.name = item.name;
+  this.address = item.address;
   this.location = item.location;
   this.venue_ID = item.venue_ID;
-  this.info = '<h5>' + this.name() + '</h5>' + '<p>Address:' + this.address() + '<br>' + ", San Francisco, CA" + '</p>';
+  this.photo = "";
+  this.rating = "";
+  this.url = "";
+  this.hours = "";
 };
+function updateInfoWindow(teaShop){
+  var info = '<div class="text-center img-wrapper" style="width:200px">' + '<a href="'+ teaShop.url + '">' + "<img class='img-responsive text-center' src='"  + teaShop.photo + "'/>" + '</a>'  + '</div>'+ '<h1 class="text-center">' + teaShop.name + '</h1>' + '<span class="glyphicon glyphicon-star">' + '</span>' + '<span class="ratingScore">'  + teaShop.rating  + '<sup>' + "/" + '<span class="ten">' + "10" +'</span>' +'</sup>' + '</span>'  ;
+  var address = '<p class="location">' + '<span class="glyphicon glyphicon-map-marker" aria-hidden="true">' + '</span>'  + teaShop.address+ ", San Francisco, CA " + '</p>';
+  var hours = '<p class="hours">'  + '<span class="glyphicon glyphicon-time">' + '</span>'+ teaShop.hours + '</p>';
+  info = info + address + hours;
+  return info ;
+}
 /*viewModel that stores the whole list of Bubble Tea listings in a Knockout observable Array
 Creating Google Maps marker for each location
 and perform search filters when user starts typing
@@ -20,31 +30,72 @@ function viewModel () {
   var self = this;
   // storing a list of locations array inside variable bubbleLocations
   // initialize empty knockout observableArray
-  this.bubbleTeaList = ko.observableArray([]);
+  self.bubbleTeaList = ko.observableArray([]);
   locations.map(function(location){
     self.bubbleTeaList.push(new TeaShops(location));
   });
+/* The following lines of code can be eliminated after using Knockout utilities
 
+  this.bubbleDOM = document.getElementById("bubbleTeaList");
+  var bubbleArr = this.bubbleTeaList().map(function(item){
+    return {title :item.name(),storeID:item.venue_ID};
+  });
+/*creating a new array stored in bubbleArr with the results
+  of callback function on each element --> teaShops object
+  with properties : title and storeID
+
+  for (var i = 0; i < bubbleArr.length; i++){
+    var title = bubbleArr[i].title;
+    var listElem = document.createElement("li");
+    listElem.classList.add("teaElem");
+    listElem.setAttribute("id","teaShop_" + i);
+    listElem.innerHTML = "<a>" + title + "</a>";
+    listElem.setAttribute("data-storeID",bubbleArr[i].storeID);
+    this.bubbleDOM.appendChild(listElem);
+  }
+  $(".teaElem").click(function(){
+    var storeID = $(this).attr("data-storeID");
+    // JS find() returns first element in an array that passes a test
+    // if gets a true value,returns value of the array element
+    var teaShop = self.bubbleTeaList().find(function (teaShop){
+      return teaShop.venue_ID == storeID;
+    });
+    google.maps.event.trigger(teaShop.marker,"click");
+  });
+*/
   // bubbleTeaList array will store Teashops objects and storing the Google maps marker object as a property of the Teashop object
-  this.bubbleTeaList().forEach(function(store,index,array){
+  self.bubbleTeaList().forEach(function(store,index,array){
     var marker = new google.maps.Marker({
       position : store.location,
       map:map,
-      info:store.info,
       id:index,
       animation:google.maps.Animation.DROP
     });
     store.marker = marker;
-    store.id = marker.id;
-    
+    store.markerID = marker.id;
     bounds.extend(marker.position);
     // listens to marker's click event, and when clicked, open up infoWindow with corresponding information
     marker.addListener("click",function(){
-      infoWindow.setContent('<div>' + marker.info + '</div>');
+      infoWindow.setContent(updateInfoWindow(store));
       infoWindow.open(map,marker);
     });
+    var venue_ID  = store.venue_ID + "/?";
+    var apiUrl = foursquareURL + venue_ID + foursquareID + foursquareSecr + foursquareVs;
+    $.ajax({
+      type: "GET",
+      url : apiUrl,
+      success:function(data){
+        var foursquareResult = data.response;
+        store.name = foursquareResult.venue.name;
+        store.photo = foursquareResult.venue.bestPhoto.prefix + "200x200" + foursquareResult.venue.bestPhoto.suffix;
+        store.rating = foursquareResult.venue.rating;
+        store.url = foursquareResult.venue.shortUrl;
+        store.hours = foursquareResult.venue.hours.status;
+      }
+    });
   });
-  console.log(this.bubbleTeaList());
+  // end of forEach loop
+
   map.fitBounds(bounds);
   map.setCenter(bounds.getCenter());
   // when the browser resize event is activated, recenter google maps boundaries
@@ -53,39 +104,39 @@ function viewModel () {
   });
   // begin filtering text input
   self.searchText= ko.observable("");
-  this.filterBubbleList = ko.computed(function(){
-    var filtering = this.searchText().toLowerCase();
+  self.filterBubbleList = ko.computed(function(){
+    var filtering = self.searchText().toLowerCase();
     // close infowindow as user keeps typing
     infoWindow.close();
+    // return filtered array with elements that passe test in the provided function test
       return self.bubbleTeaList().filter(function getMatch(item){
-        var showItem = !filtering || item.name().toLowerCase().indexOf(filtering) >= 0;
+        var test = item.name.toLowerCase().indexOf(filtering) >= 0;
+        var showItem = !filtering || test;
           item.marker.setVisible(showItem);
           return showItem;
       });
 
   },this);
-
-
-      this.bubbleDOM = document.getElementById("bubbleTeaList");
-      var bubbleArr = this.bubbleTeaList().map(function(item){
-        return item.name();
-      });
-      for (var i = 0; i < bubbleArr.length; i++){
-        var title = bubbleArr[i];
-        var listElem = document.createElement("li");
-        listElem.classList.add("teaElem");
-        listElem.setAttribute("id",i);
-        listElem.innerHTML = "<a>" + title + "</a>";
-        this.bubbleDOM.appendChild(listElem);
-      }
-
-
+  // attach a click binding to knockout
+  self.clickableMarker = function(teaShop){
+    google.maps.event.trigger(teaShop.marker,"click");
+  };
 }
-
+$(".nav-toggle-btn").removeClass("close");
+$(".nav-toggle-btn").click(function(){
+  $(".nav-container").addClass("open");
+  $(this).addClass("close");
+});
+$(".nav-toggle-btn.close").click(function(){
+  console.log($(this));
+  $(".nav-container").removeClass("open");
+});
 // global variables for the app
 var map;
-var foursquareID = "KQZCWKWZJ04GEK2BNVMOFLOY24JVA3IJDBHJIWKWNGYSQADB";
-var foursquareSecr = "FSJK4HAKCYIHM2DIC4NGDL33N44SBSGNGE25DCLOT01WK1UF";
+var foursquareURL = "https://api.foursquare.com/v2/venues/";
+var foursquareID = "&client_id=KQZCWKWZJ04GEK2BNVMOFLOY24JVA3IJDBHJIWKWNGYSQADB";
+var foursquareSecr = "&client_secret=FSJK4HAKCYIHM2DIC4NGDL33N44SBSGNGE25DCLOT01WK1UF";
+var foursquareVs = "&v=20170101";
 var locations = [
   {
   "name" : "Boba Guys",
@@ -114,10 +165,10 @@ var locations = [
   "address" : "135 4th St",
   "venue_ID" : "54f0d6d5498e9a7e483f2e80"
 },{
-  "name" : "Mitsu Tea House",
-  "location" : {lat:37.785285,lng:-122.429177},
-  "address" : "22 Peace Plz #440",
-  "venue_ID" : "54c44df1498e8d9e272a318f"
+  "name" : "PurpleKow",
+  "location" : {lat:37.775941,lng:-122.497787},
+  "address" : "3620 Balboa St",
+  "venue_ID" : "4e7fd43ebe7b414d61ef63d8"
 },{
   "name" : "i-Tea",
   "location" : {lat:37.763524,lng:-122.481173},
@@ -129,20 +180,20 @@ var locations = [
   "address" : "3836 Geary Blvd",
   "venue_ID" : "51eb348d498efde2657abad0"
 },{
-  "name" : "Bobapioca",
-  "location" : {lat:37.794647,lng:-122.404561},
-  "address" : "708 Kearny St",
-  "venue_ID" : "56ad39a5498e0aacc4f7b87f"
+  "name" : "Super Cue Cafe",
+  "location" : {lat:37.742762,lng:-122.478584},
+  "address" : "1139 Taraval St",
+  "venue_ID" : "51e60310498eca96abdd4a22"
 },{
   "name" : "Quickly",
   "location" : {lat:37.784452,lng:-122.417986},
   "address" : "709 Larkin St",
   "venue_ID" : "4b0098b5f964a520d33f22e3"
 },{
-  "name" : "Cool Tea Bar",
-  "location" :{lat:37.794298,lng:-122.406983},
-  "address" : "103 Waverly Pl",
-  "venue_ID" : "5616e060498ecfea6b3c29ad"
+  "name" : "Teaone",
+  "location" :{lat:37.780687,lng:-122.476872},
+  "address" : "5336 Geary Blvd",
+  "venue_ID" : "5388dd4f498e39acdc909b8d"
 }
 ];
 function initializeMap() {
@@ -185,7 +236,8 @@ function initializeMap() {
   };
   map = new google.maps.Map(document.querySelector("#map"),mapOptions);
   infoWindow = new google.maps.InfoWindow({
-    content:""
+    content:"",
+    maxWidth:300
   });
   bounds = new google.maps.LatLngBounds();
   // calling Ko.applyBindings with viewModel passed in will activate to the UI
