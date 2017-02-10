@@ -1,4 +1,4 @@
-###  Boba Tea Finder App - San Francisco
+##  Boba Tea Finder App - San Francisco
 This is a capstone udacity single-page-application that utilizes Knockout.js for showing a list of nearby Boba Teas in the San Francisco,CA area. The app separates the UI and the Javascript data with Knockout, and bound the HTML DOM with Knockout utilities. It's not only user-friendly but also mobile-responsive and consistent across browsers. 
 ### Libraries, third-party APIs,Fonts : 
 * Google Maps
