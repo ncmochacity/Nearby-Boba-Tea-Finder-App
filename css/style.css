@@ -32,6 +32,8 @@ h5{
 }
 .listHeader{
   color:#6a5750;
+  font-weight:900;
+  text-transform: uppercase;
 }
 .img-wrapper{
   margin: 0 auto;

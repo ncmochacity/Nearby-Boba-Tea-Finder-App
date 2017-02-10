@@ -124,13 +124,10 @@ function viewModel () {
 }
 $(".nav-toggle-btn").removeClass("close");
 $(".nav-toggle-btn").click(function(){
-  $(".nav-container").addClass("open");
-  $(this).addClass("close");
+  $(".nav-container").toggleClass("open");
+  $(this).toggleClass("close");
 });
-$(".nav-toggle-btn.close").click(function(){
-  console.log($(this));
-  $(".nav-container").removeClass("open");
-});
+
 // global variables for the app
 var map;
 var foursquareURL = "https://api.foursquare.com/v2/venues/";
