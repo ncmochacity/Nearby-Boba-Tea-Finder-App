@@ -20,7 +20,7 @@ function updateInfoWindow(teaShop){
   var address = '<p class="location">' + '<span class="glyphicon glyphicon-map-marker" aria-hidden="true">' + '</span>'  + teaShop.address+ ", San Francisco, CA " + '</p>';
   var hours = '<p class="hours">'  + '<span class="glyphicon glyphicon-time">' + '</span>'+ teaShop.hours + '</p>';
   info = info + address + hours;
-  return info ;
+  return info;
 }
 // Bounce function upon clicking any of the markers, with setTimeOut function that turns off bouncing animation after a second
 function toggleBounce(marker){
@@ -38,6 +38,11 @@ function setTimeOutMarker(marker){
     marker.setAnimation(null);
   },1000);
 }
+function errorHandlerMap(){
+  var mapErrorElem = document.getElementsByClassName("mapErrorHandler");
+  mapErrorElem.style.display = "block";
+  mapErrorElem.innerHTML = "There's something wrong with loading the Google Maps. Try reload the page";
+}
 /*viewModel that stores the whole list of Bubble Tea listings in a Knockout observable Array
 Creating Google Maps marker for each location
 and perform search filters when user starts typing
@@ -50,6 +55,8 @@ function viewModel () {
   locations.map(function(location){
     self.bubbleTeaList.push(new TeaShops(location));
   });
+  var msg = $(".foursquareError");
+
 /* The following lines of code can be eliminated after using Knockout utilities
 
   this.bubbleDOM = document.getElementById("bubbleTeaList");
@@ -96,7 +103,7 @@ function viewModel () {
       infoWindow.open(map,marker);
       toggleBounce(marker);
     });
-    console.log(marker);
+
     var venue_ID  = store.venue_ID + "/?";
     var apiUrl = foursquareURL + venue_ID + foursquareID + foursquareSecr + foursquareVs;
     $.ajax({
@@ -109,9 +116,22 @@ function viewModel () {
         store.rating = foursquareResult.venue.rating;
         store.url = foursquareResult.venue.shortUrl;
         store.hours = foursquareResult.venue.hours.status;
+      },
+    })
+    .fail(function(jqXHR,exception){
+      switch(jqXHR.status){
+        case 0:
+          msg = msg.text("Foursquare Request Failed: " + "No connection");
+          break;
+        case 404:
+          msg = msg.text("Requested page not found. [404]");
+          break;
+        case 500:
+          msg = msg.text("Internal Server Error [500]");
+          break;
+        default:
+          msg = msg.text("There's something wrong with loading Foursquare data");
       }
-    }).fail(function(){
-      console.log("fail");
     });
   });
   // end of forEach loop

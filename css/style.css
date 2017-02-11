@@ -35,6 +35,15 @@ h5{
   font-weight:900;
   text-transform: uppercase;
 }
+.foursquareError{
+  font-family:"Source Sans Pro",sans-serif;
+  font-weight:900;
+  font-size:3em;
+  background-color:#333;
+  color:#fff;
+  transition:all 0.5s ease-in-out;
+  -webkit-transition:all 0.5s ease-in-out;
+}
 .img-wrapper{
   margin: 0 auto;
 }

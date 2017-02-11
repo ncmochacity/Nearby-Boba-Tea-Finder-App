@@ -21,6 +21,7 @@
         <div class="input-group col-xs-12">
           <input type="text" class="form-control" data-bind="textInput: searchText,valueUpdate: 'afterkeydown'" id="searchBox" placeholder="Search for a nearby Boba Tea: ">
         </div>
+
         <a href="#" class="nav-toggle-btn">
           <span></span>
           <span></span>
@@ -33,20 +34,21 @@
             <li id="textElem"><a href="#" data-bind="text:name,click:$parent.clickableMarker"></a></li>
           </ul>
         </nav>
-
+        <div class="foursquareError text-center"></div>
       </div>
       <div class="col-md-6 mapSection">
         <div id="map"></div>
+        <div class="mapErrorHandler"></div>
       </div>
     </div>
   </div>
 
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2m1yNrQwNuFETXmpmoAmpPi98rLpN0Ko&libraries=places&callback=initializeMap">
-  </script>
+
   <script src="libs/js/jquery-3.1.1.min.js"></script>
   <script src="libs/js/knockout-3.4.1.js"></script>
   <script src="libs/js/bootstrap.min.js"></script>
   <script src="js/main.js"></script>
-
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2m1yNrQwNuFETXmpmoAmpPi98rLpN0Ko&libraries=places&callback=initializeMap" onerror="errorHandlerMap()">
+  </script>
 </body>
 </html>
