@@ -22,6 +22,22 @@ function updateInfoWindow(teaShop){
   info = info + address + hours;
   return info ;
 }
+// Bounce function upon clicking any of the markers, with setTimeOut function that turns off bouncing animation after a second
+function toggleBounce(marker){
+  if(marker.getAnimation() !== null){
+    marker.setAnimation(null);
+  }
+  else{
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+    setTimeOutMarker(marker);
+  }
+
+}
+function setTimeOutMarker(marker){
+  setTimeout(function(){
+    marker.setAnimation(null);
+  },1000);
+}
 /*viewModel that stores the whole list of Bubble Tea listings in a Knockout observable Array
 Creating Google Maps marker for each location
 and perform search filters when user starts typing
@@ -78,7 +94,9 @@ function viewModel () {
     marker.addListener("click",function(){
       infoWindow.setContent(updateInfoWindow(store));
       infoWindow.open(map,marker);
+      toggleBounce(marker);
     });
+    console.log(marker);
     var venue_ID  = store.venue_ID + "/?";
     var apiUrl = foursquareURL + venue_ID + foursquareID + foursquareSecr + foursquareVs;
     $.ajax({
@@ -92,6 +110,8 @@ function viewModel () {
         store.url = foursquareResult.venue.shortUrl;
         store.hours = foursquareResult.venue.hours.status;
       }
+    }).fail(function(){
+      console.log("fail");
     });
   });
   // end of forEach loop
