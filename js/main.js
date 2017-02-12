@@ -39,9 +39,8 @@ function setTimeOutMarker(marker){
   },1000);
 }
 function errorHandlerMap(){
-  var mapErrorElem = document.getElementsByClassName("mapErrorHandler");
-  mapErrorElem.style.display = "block";
-  mapErrorElem.innerHTML = "There's something wrong with loading the Google Maps. Try reload the page";
+  var mapErrorElem = $(".mapErrorHandler");
+  mapErrorElem = mapErrorElem.text( "There's something wrong with loading the Google Maps. Try reload the page");
 }
 /*viewModel that stores the whole list of Bubble Tea listings in a Knockout observable Array
 Creating Google Maps marker for each location
